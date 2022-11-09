@@ -1,0 +1,80 @@
+#!/bin/sh
+# ----- config-block { -----
+VCPUS=1
+# RAM size in MiB
+RAM_SIZE=512
+DISK_SIZE=5G
+DEFAULT_USER='user'
+DEFAULT_PASSWD='pass'
+# ----- } config-block -----
+
+VM_ID=$1
+IP_NUMBER=$2
+
+CMD=`basename $0`
+if [ -z "$VM_ID" ]; then
+    echo "VM_ID not specified."
+    echo "Usage: $CMD <VM_ID> [<IP_NUMBER>]\n"
+    echo "  <VM_ID> - VM identifier, used also as hostname."
+    echo "  <IP_NUMBER> - last segment of IP-address from default KVM network."
+    exit 1
+fi
+
+
+PUB_KEY=$(cat ~/.ssh/id_rsa.pub)
+PASSWD_HASH=`openssl passwd -6 $DEFAULT_PASSWD`
+
+mkdir -p /tmp/$VM_ID
+
+sudo cat > /tmp/$VM_ID/user-data <<EOF
+#cloud-config
+hostname: $VM_ID
+users:
+  - name: $DEFAULT_USER
+    ssh-authorized-keys:
+      - $PUB_KEY
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: sudo
+    passwd: "$PASSWD_HASH"
+    lock_passwd: false
+    shell: /bin/bash
+runcmd:
+  - echo "AllowUsers $DEFAULT_USER" >> /etc/ssh/sshd_config
+  - restart ssh
+EOF
+
+if [ $IP_NUMBER ]; then
+    sudo cat > /tmp/$VM_ID/network-config <<EOF
+version: 2
+ethernets:
+  enp1s0:
+    addresses:
+      - 192.168.122.$IP_NUMBER/24
+    gateway4: 192.168.122.1
+    nameservers:
+      addresses: 
+        - 192.168.122.1
+        - 1.1.1.1
+        - 8.8.8.8
+EOF
+    NETWORK_CONFIG="--network-config=/tmp/$VM_ID/network-config"
+fi
+
+echo "Cloud-init files for $VM_ID created."
+
+sudo mkdir -p /var/lib/libvirt/images/$VM_ID
+
+sudo qemu-img create -f qcow2 -F qcow2 -o backing_file=/var/lib/libvirt/images/base/ubuntu-22.04.qcow2 /var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2
+
+sudo qemu-img resize /var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2 $DISK_SIZE
+
+# Create seed disk with cloud-init data
+sudo cloud-localds -v /var/lib/libvirt/images/$VM_ID/$VM_ID-seed.qcow2 $NETWORK_CONFIG /tmp/$VM_ID/user-data
+
+rm -r /tmp/$VM_ID
+
+sudo virt-install --connect qemu:///system --virt-type kvm --name $VM_ID \
+--memory $RAM_SIZE --vcpus=$VCPUS --os-variant ubuntu22.04 \
+--disk path=/var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2,format=qcow2 \
+--disk path=/var/lib/libvirt/images/$VM_ID/$VM_ID-seed.qcow2,format=qcow2 \
+--import --network network=default --noautoconsole
