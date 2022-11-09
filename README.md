@@ -111,7 +111,7 @@ ssh user@192.168.122.101
 
 ## Useful KVM commands
 
-List running VMs.
+List of running VMs.
 ```
 sudo virsh list
 ```
