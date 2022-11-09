@@ -64,7 +64,7 @@ Also make it executable.
 ```
 wget https://github.com/devgkz/kvm-short-setup/archive/refs/heads/main.zip
 unzip main.zip
-mv kvm-short-setup/createvm ~/.local/bin
+mv kvm-short-setup-main/createvm ~/.local/bin
 chmod +x ~/.local/bin/createvm
 ```
 
