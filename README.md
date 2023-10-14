@@ -20,7 +20,7 @@ egrep -c '(vmx|svm)' /proc/cpuinfo
 Install KVM related packages.
 
 ```
-sudo apt install qemu-kvm virtinst libvirt-daemon-system cloud-image-utils
+sudo apt install bridge-utils libvirt-clients libvirt-daemon-system qemu-system-x86 kpartx extlinux cryptsetup qemu-kvm virtinst libvirt-daemon-system cloud-image-utils
 ```
 
 Check service libvirtd is running.
