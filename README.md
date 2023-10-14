@@ -43,16 +43,26 @@ Get Ubuntu Minimal Cloud Image and move into directory.
 wget https://cloud-images.ubuntu.com/minimal/releases/jammy/release/ubuntu-22.04-minimal-cloudimg-amd64.img
 ```
 
+OR 
+
+Build Ubuntu Minimal VM from custom ubuntu Dockerfile
+
+Install d2vm from https://github.com/linka-cloud/d2vm#from-release and then run following command:
+
+```
+sudo d2vm convert umakantk/ubuntu:ztx_01 -o ubuntu.qcow2 -p purdue@ztx
+```
+
 Check image has file format qcow2.
 
 ```
-qemu-img info ubuntu-22.04-minimal-cloudimg-amd64.img
+qemu-img info ubuntu.qcow2
 ````
 
 Move image into directory.
 
 ```
-sudo mv ubuntu-22.04-minimal-cloudimg-amd64.img /var/lib/libvirt/images/base/ubuntu-22.04.qcow2
+sudo mv ubuntu.qcow2 /var/lib/libvirt/images/base/ubuntu-22.04.qcow2
 ```
 
 ## Creating virtual machines
