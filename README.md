@@ -67,15 +67,15 @@ sudo mv ubuntu.qcow2 /var/lib/libvirt/images/base/ubuntu-22.04.qcow2
 
 ## Creating virtual machines
 
-Get `createvm` from this repository and place into `~./local/bin` directory.
+Get `createvm` from this repository and place into `/usr/local/bin/` directory.
 
 Also make it executable.
 
 ```
-wget https://github.com/devgkz/kvm-short-setup/archive/refs/heads/main.zip
+wget https://github.com/UmakantKulkarni/kvm-setup/archive/refs/heads/main.zip
 unzip main.zip
-mv kvm-short-setup-main/createvm ~/.local/bin
-chmod +x ~/.local/bin/createvm
+mv kvm-setup-main/createvm /usr/local/bin/
+chmod +x /usr/local/bin/createvm
 ```
 
 Open `createvm` and check config block, edit if nesessary. 
