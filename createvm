@@ -1,11 +1,11 @@
 #!/bin/sh
 # ----- config-block { -----
-VCPUS=1
+VCPUS=8
 # RAM size in MiB
-RAM_SIZE=512
-DISK_SIZE=5G
-DEFAULT_USER='user'
-DEFAULT_PASSWD='pass'
+RAM_SIZE=8192
+DISK_SIZE=50G
+DEFAULT_USER='root'
+DEFAULT_PASSWD='purdue@ztx'
 # ----- } config-block -----
 
 VM_ID=$1
@@ -21,7 +21,7 @@ if [ -z "$VM_ID" ]; then
 fi
 
 
-PUB_KEY=$(cat ~/.ssh/id_rsa.pub)
+PUB_KEY=$(cat /root/.ssh/id_rsa.pub)
 PASSWD_HASH=`openssl passwd -6 $DEFAULT_PASSWD`
 
 mkdir -p /tmp/$VM_ID
@@ -40,6 +40,7 @@ users:
     shell: /bin/bash
 runcmd:
   - echo "AllowUsers $DEFAULT_USER" >> /etc/ssh/sshd_config
+  - echo "PermitRootLogin yes" >> /etc/ssh/sshd_config
   - restart ssh
 EOF
 
@@ -48,6 +49,7 @@ if [ $IP_NUMBER ]; then
 version: 2
 ethernets:
   enp1s0:
+    dhcp4: false
     addresses:
       - 192.168.122.$IP_NUMBER/24
     gateway4: 192.168.122.1
@@ -77,4 +79,4 @@ sudo virt-install --connect qemu:///system --virt-type kvm --name $VM_ID \
 --memory $RAM_SIZE --vcpus=$VCPUS --os-variant ubuntu22.04 \
 --disk path=/var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2,format=qcow2 \
 --disk path=/var/lib/libvirt/images/$VM_ID/$VM_ID-seed.qcow2,format=qcow2 \
---import --network network=default --noautoconsole
+--import --network network=default --noautoconsole --graphics none
