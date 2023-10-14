@@ -66,7 +66,7 @@ echo "Cloud-init files for $VM_ID created."
 
 sudo mkdir -p /var/lib/libvirt/images/$VM_ID
 
-sudo qemu-img create -f qcow2 -F qcow2 -o backing_file=/var/lib/libvirt/images/base/ubuntu-22.04.qcow2 /var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2
+sudo qemu-img create -f qcow2 -F qcow2 -o backing_file=/var/lib/libvirt/images/purdue-ztx/ubuntu-22.04-purdue-ztx.qcow2 /var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2
 
 sudo qemu-img resize /var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2 $DISK_SIZE
 
