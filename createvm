@@ -3,7 +3,7 @@
 VCPUS=8
 # RAM size in MiB
 RAM_SIZE=8192
-DISK_SIZE=25
+DISK_SIZE=25G
 DEFAULT_USER='root'
 DEFAULT_PASSWD='purdue@ztx'
 # ----- } config-block -----
@@ -68,7 +68,7 @@ sudo mkdir -p /var/lib/libvirt/images/$VM_ID
 
 sudo qemu-img create -f qcow2 -F qcow2 -o backing_file=/var/lib/libvirt/images/purdue-ztx/ubuntu-22.04-purdue-ztx.qcow2 /var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2
 
-sudo qemu-img resize /var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2 ${DISK_SIZE}G
+sudo qemu-img resize /var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2 $DISK_SIZE
 
 # Create seed disk with cloud-init data
 sudo cloud-localds -v /var/lib/libvirt/images/$VM_ID/$VM_ID-seed.qcow2 $NETWORK_CONFIG /tmp/$VM_ID/user-data
@@ -76,7 +76,7 @@ sudo cloud-localds -v /var/lib/libvirt/images/$VM_ID/$VM_ID-seed.qcow2 $NETWORK_
 rm -r /tmp/$VM_ID
 
 sudo virt-install --connect qemu:///system --virt-type kvm --name $VM_ID \
---memory $RAM_SIZE --vcpus=$VCPUS --disk size=$DISK_SIZE --os-variant ubuntu22.04 \
+--memory $RAM_SIZE --vcpus=$VCPUS --os-variant ubuntu22.04 \
 --disk path=/var/lib/libvirt/images/$VM_ID/$VM_ID.qcow2,format=qcow2 \
 --disk path=/var/lib/libvirt/images/$VM_ID/$VM_ID-seed.qcow2,format=qcow2 \
 --import --network network=default --noautoconsole --graphics none
