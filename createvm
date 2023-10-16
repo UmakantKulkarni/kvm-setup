@@ -2,8 +2,8 @@
 # ----- config-block { -----
 VCPUS=8
 # RAM size in MiB
-RAM_SIZE=8192
-DISK_SIZE=25G
+RAM_SIZE=12288
+DISK_SIZE=50G
 DEFAULT_USER='root'
 DEFAULT_PASSWD='purdue@ztx'
 # ----- } config-block -----
